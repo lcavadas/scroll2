@@ -137,8 +137,17 @@
     };
 
     var _scroll = function (e) {
-      scrollLeft += e.originalEvent.deltaX;
-      scrollTop += e.originalEvent.deltaY;
+      if (e.type === 'touchmove') {
+        if (pageX.touch && pageY.touch) {
+          scrollLeft += e.pageX - pageX.touch;
+          scrollTop += e.pageY - pageY.touch;
+        }
+        pageX.touch = e.pageX;
+        pageY.touch = e.pageY;
+      } else {
+        scrollLeft += e.originalEvent.deltaX;
+        scrollTop += e.originalEvent.deltaY;
+      }
       _applyScroll(e);
     };
 
