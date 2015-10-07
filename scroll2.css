@@ -15,7 +15,7 @@
 }
 
 .scroll2 .scroll2-rail {
-    transition: all 1s ease;
+    transition: all .3s ease;
     opacity: 0;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .scroll2 .scroll2-bar {
-    transition: opacity, width 1s ease;
+    transition: opacity 1s ease, width .2s ease, height .2s ease;
     opacity: 0;
 }
 

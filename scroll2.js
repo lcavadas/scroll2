@@ -26,7 +26,7 @@
       railColor: '#aaa',
       barColor: '#000',
       marginY: 2,
-      marginX: 0,
+      marginX: 2,
       timeout: 1000
     }, options);
 
@@ -35,10 +35,12 @@
       var widthRatio = _$wrapper.width() / _$this.width();
 
       _$verticalBar.height(Math.floor(100 * heightRatio) + '%');
-      _$verticalBar.height(_$verticalBar.height());
-
       _$horizontalBar.width(Math.floor(100 * widthRatio) + '%');
-      _$horizontalBar.width(_$horizontalBar.width());
+
+      window.setTimeout(function () { //Safari will report the interim size until the css animation finishes.
+        _$verticalBar.height(_$verticalBar.height());
+        _$horizontalBar.width(_$horizontalBar.width());
+      }, 200);
 
       if (_$this.height() === _$wrapper.height()) {
         _$verticalBar.hide();
@@ -86,21 +88,17 @@
 
     var _activateRail = function (e, orientation) {
       if (orientation === 'horizontal') {
-        _$horizontalRail.height(settings.size + 7);
         _$horizontalBar.height(settings.size + 3);
         _$horizontalBar.css('bottom', settings.marginX + 2 + 'px');
         _activate(_$horizontalRail, e, orientation + 'rail', function () {
           _$horizontalBar.css('bottom', settings.marginX + 'px');
-          _$horizontalRail.height(settings.size);
           _$horizontalBar.height(settings.size);
         });
       } else {
-        _$verticalRail.width(settings.size + 7);
         _$verticalBar.width(settings.size + 3);
         _$verticalBar.css('right', settings.marginY + 2 + 'px');
         _activate(_$verticalRail, e, orientation + 'rail', function () {
           _$verticalBar.css('right', settings.marginY + 'px');
-          _$verticalRail.width(settings.size);
           _$verticalBar.width(settings.size);
         });
       }
@@ -201,7 +199,7 @@
       _$content = $('<div class="scroll2-content"/>');
 
       _$verticalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
-      _$verticalRail.width(settings.size);
+      _$verticalRail.width(settings.size + 7);
       _$verticalRail.css('background-color', settings.railColor);
       _$verticalRail.css('top', '0');
       _$verticalRail.css('right', settings.marginY + 'px');
@@ -215,7 +213,7 @@
       _$verticalBar.css('right', settings.marginY + 'px');
 
       _$horizontalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
-      _$horizontalRail.height(settings.size);
+      _$horizontalRail.height(settings.size + 7);
       _$horizontalRail.css('background-color', settings.railColor);
       _$horizontalRail.css('left', '0');
       _$horizontalRail.css('bottom', settings.marginX + 'px');

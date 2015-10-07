@@ -28,7 +28,7 @@
   });
 
   gulp.task('watch', function () {
-    gulp.watch('scroll2.js', ['js', 'min']);
+    gulp.watch('scroll2.js', ['min']);
     gulp.watch('scroll2.css', ['css']);
   });
 
