@@ -187,8 +187,8 @@
     var _init = function () {
       _$parent = _$this.parent();
       _$wrapper = $('<div class="scroll2"/>');
-      _$wrapper.bind('mousewheel mousemove', _activateBar);
-      _$wrapper.bind('mousewheel', _scroll);
+      _$wrapper.bind('mousewheel wheel mousemove', _activateBar);
+      _$wrapper.bind('mousewheel wheel', _scroll);
       _$content = $('<div class="scroll2-content"/>');
 
       _$verticalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
