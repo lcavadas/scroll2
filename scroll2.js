@@ -86,6 +86,9 @@
       _$this.unbind('DOMSubtreeModified', _update);
       $(window).unbind('resize', _update);
       $(document).unbind('mouseup', _deactivateDrag);
+      if (settings.appendTo) {
+        $(settings.appendTo).unbind('mousemove', _barDrag);
+      }
       _$this.remove();
       _$parent.append(_$this);
       _$wrapper.remove();
@@ -258,7 +261,7 @@
       _$horizontalBar.css('bottom', settings.marginX + 'px');
 
       $(document).bind('mouseup', _deactivateDrag);
-      if(settings.appendTo){
+      if (settings.appendTo) {
         $(settings.appendTo).bind('mousemove', _barDrag);
       } else {
         _$wrapper.bind('mousemove', _barDrag);
@@ -306,7 +309,7 @@
       _$wrapper.append(_$content);
       _$content.append(_$this);
       _$parent.append(_$wrapper);
-      if(settings.appendTo){
+      if (settings.appendTo) {
         var $appendTarget = $(settings.appendTo);
         $appendTarget.append(_$verticalRail);
         $appendTarget.append(_$verticalBar);
