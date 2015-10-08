@@ -27,10 +27,33 @@
       barColor: '#000',
       marginY: 2,
       marginX: 2,
-      timeout: 1000
+      timeout: 1000,
+      container: {
+        width: '',
+        height: ''
+      },
+      vertical: true,
+      horizontal: true,
+      appendTo: undefined
     }, options);
 
+    var _throttledUpdate = function () {
+      _lastActive.throttle = new Date().getTime();
+      window.setTimeout(function () {
+        if (new Date().getTime() - _lastActive.throttle >= 500) {
+          _update();
+        }
+      }, 500);
+    };
+
     var _update = function () {
+      if (typeof settings.container.width === 'function') {
+        _$wrapper.width(settings.container.width());
+      }
+      if (typeof settings.container.height === 'function') {
+        _$wrapper.height(settings.container.height());
+      }
+
       var heightRatio = _$wrapper.height() / _$this.height();
       var widthRatio = _$wrapper.width() / _$this.width();
 
@@ -42,7 +65,7 @@
         _$horizontalBar.width(_$horizontalBar.width());
       }, 200);
 
-      if (_$this.height() === _$wrapper.height()) {
+      if (_$this.height() <= _$wrapper.height() || !settings.vertical) {
         _$verticalBar.hide();
         _$verticalRail.hide();
       } else {
@@ -50,7 +73,7 @@
         _$verticalRail.show();
       }
 
-      if (_$this.width() === _$wrapper.width()) {
+      if (_$this.width() <= _$wrapper.width() || !settings.horizontal) {
         _$horizontalBar.hide();
         _$horizontalRail.hide();
       } else {
@@ -61,6 +84,7 @@
 
     var _destroy = function () {
       _$this.unbind('DOMSubtreeModified', _update);
+      $(window).unbind('resize', _update);
       $(document).unbind('mouseup', _deactivateDrag);
       _$this.remove();
       _$parent.append(_$this);
@@ -132,8 +156,12 @@
         e.preventDefault();
         _$verticalBar.css('top', (_$wrapper.height() * scrollTop / _$this.height()) + 'px');
         _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
-        _$content.scrollTop(scrollTop);
-        _$content.scrollLeft(scrollLeft);
+        if (_$horizontalBar.is(':visible')) {
+          _$content.scrollLeft(scrollLeft);
+        }
+        if (_$verticalBar.is(':visible')) {
+          _$content.scrollTop(scrollTop);
+        }
       }
     };
 
@@ -197,9 +225,9 @@
     var _init = function () {
       _$parent = _$this.parent();
       _$wrapper = $('<div class="scroll2"/>');
+      _$content = $('<div class="scroll2-content"/>');
       _$wrapper.bind('mousewheel touchmove wheel mousemove', _activateBar);
       _$wrapper.bind('mousewheel touchmove wheel', _scroll);
-      _$content = $('<div class="scroll2-content"/>');
 
       _$verticalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
       _$verticalRail.width(settings.size + 7);
@@ -272,15 +300,23 @@
 
       _$this.remove();
       _$wrapper.append(_$content);
-      _$wrapper.append(_$verticalRail);
-      _$wrapper.append(_$verticalBar);
-      _$wrapper.append(_$horizontalRail);
-      _$wrapper.append(_$horizontalBar);
       _$content.append(_$this);
       _$parent.append(_$wrapper);
+      if(settings.appendTo){
+        var $appendTarget = $(settings.appendTo);
+        $appendTarget.append(_$verticalRail);
+        $appendTarget.append(_$verticalBar);
+        $appendTarget.append(_$horizontalRail);
+        $appendTarget.append(_$horizontalBar);
+      } else {
+        _$wrapper.append(_$verticalRail);
+        _$wrapper.append(_$verticalBar);
+        _$wrapper.append(_$horizontalRail);
+        _$wrapper.append(_$horizontalBar);
+      }
 
-      _$this.bind('DOMSubtreeModified', _update);
-
+      _$this.bind('DOMSubtreeModified', _throttledUpdate);
+      $(window).bind('resize', _update);
       _update();
     };
     _init();
