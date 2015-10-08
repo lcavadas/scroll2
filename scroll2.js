@@ -120,18 +120,21 @@
         scrollTop = 0;
       } else if (scrollTop > _$this.height() - _$wrapper.height()) {
         scrollTop = _$this.height() - _$wrapper.height();
-      } else if (scrollLeft < 0) {
+      }
+
+      if (scrollLeft < 0) {
         scrollLeft = 0;
       } else if (scrollLeft > _$this.width() - _$wrapper.width()) {
         scrollLeft = _$this.width() - _$wrapper.width();
-      } else {
-        e.preventDefault();
       }
 
-      _$verticalBar.css('top', (_$wrapper.height() * scrollTop / _$this.height()) + 'px');
-      _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
-      _$content.scrollTop(scrollTop);
-      _$content.scrollLeft(scrollLeft);
+      if (_$content.scrollTop() !== scrollTop || _$content.scrollLeft() !== scrollLeft) {
+        e.preventDefault();
+        _$verticalBar.css('top', (_$wrapper.height() * scrollTop / _$this.height()) + 'px');
+        _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
+        _$content.scrollTop(scrollTop);
+        _$content.scrollLeft(scrollLeft);
+      }
     };
 
     var _scroll = function (e) {
