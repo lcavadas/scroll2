@@ -258,7 +258,11 @@
       _$horizontalBar.css('bottom', settings.marginX + 'px');
 
       $(document).bind('mouseup', _deactivateDrag);
-      _$wrapper.bind('mousemove', _barDrag);
+      if(settings.appendTo){
+        $(settings.appendTo).bind('mousemove', _barDrag);
+      } else {
+        _$wrapper.bind('mousemove', _barDrag);
+      }
 
       _$verticalBar.bind('mousemove', function (e) {
         _activateBoth(e, 'vertical');
