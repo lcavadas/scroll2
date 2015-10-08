@@ -177,8 +177,9 @@
         pageX.touch = e.originalEvent.touches[0].pageX;
         pageY.touch = e.originalEvent.touches[0].pageY;
       } else {
-        scrollLeft += e.originalEvent.deltaX;
-        scrollTop += e.originalEvent.deltaY;
+        //IE will generate events were the deltas are undefined instead of 0
+        scrollLeft += e.originalEvent.deltaX || 0;
+        scrollTop += e.originalEvent.deltaY || 0;
       }
       _applyScroll(e);
     };
