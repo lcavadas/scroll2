@@ -83,8 +83,8 @@
     };
 
     var _destroy = function () {
-      _$this.unbind('DOMSubtreeModified', _update);
-      $(window).unbind('resize', _update);
+      _$this.unbind('DOMSubtreeModified', _throttledUpdate);
+      $(window).unbind('resize', _throttledUpdate);
       $(document).unbind('mouseup', _deactivateDrag);
       if (settings.appendTo) {
         $(settings.appendTo).unbind('mousemove', _barDrag);
@@ -326,7 +326,7 @@
       }
 
       _$this.bind('DOMSubtreeModified', _throttledUpdate);
-      $(window).bind('resize', _update);
+      $(window).bind('resize', _throttledUpdate);
       _update();
     };
     _init();
