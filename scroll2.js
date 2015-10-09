@@ -185,10 +185,12 @@
     };
 
     var _activateDrag = function (e, orientation) {
+      $(document.body).addClass('scroll2-noselect');
       _isDragging[orientation] = true;
     };
 
     var _deactivateDrag = function () {
+      $(document.body).removeClass('scroll2-noselect');
       _isDragging = {};
     };
 
