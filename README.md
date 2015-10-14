@@ -34,30 +34,30 @@ See it in action [here](https://rawgit.com/lcavadas/scroll2/master/scroll2.html)
 
 ```javascript
 {
-      size: 7,
-      railColor: '#aaa',
-      barColor: '#000',
-      timeout: 1000,
-      container: {
-        width: '',
-        height: ''
-      },
-      appendTo: undefined,
-      vertical: {
-        active:true,
-        margin: 2,
-        trigger: {
-          callback: undefined,
-          offset: 0
-        }
-      },
-      horizontal: {
-        active:true,
-        margin:2,
-        trigger: {
-          callback: undefined,
-          offset: 0
-        }
-      }
+  size: 7,
+  railColor: '#aaa',
+  barColor: '#000',
+  timeout: 1000,
+  container: {
+    width: '',
+    height: ''
+  },
+  appendTo: undefined,
+  vertical: {
+    active:true,
+    margin: 2,
+    trigger: {
+      callback: undefined,
+      offset: 0
     }
+  },
+  horizontal: {
+    active:true,
+    margin:2,
+    trigger: {
+      callback: undefined,
+      offset: 0
+    }
+  }
+}
 ```
