@@ -21,20 +21,32 @@
     var pageY = {};
     var _isDragging = {};
 
-    var settings = $.extend({
+    var settings = $.extend(true, {
       size: 7,
       railColor: '#aaa',
       barColor: '#000',
-      marginY: 2,
-      marginX: 2,
       timeout: 1000,
       container: {
         width: '',
         height: ''
       },
-      vertical: true,
-      horizontal: true,
-      appendTo: undefined
+      appendTo: undefined,
+      vertical: {
+        active:true,
+        margin: 2,
+        trigger: {
+          callback: undefined,
+          offset: 0
+        }
+      },
+      horizontal: {
+        active:true,
+        margin:2,
+        trigger: {
+          callback: undefined,
+          offset: 0
+        }
+      }
     }, options);
 
     var _throttledUpdate = function () {
@@ -65,7 +77,7 @@
         _$horizontalBar.width(_$horizontalBar.width());
       }, 200);
 
-      if (_$this.height() <= _$wrapper.height() || !settings.vertical) {
+      if (_$this.height() <= _$wrapper.height() || !settings.vertical.active) {
         _$verticalBar.hide();
         _$verticalRail.hide();
       } else {
@@ -73,7 +85,7 @@
         _$verticalRail.show();
       }
 
-      if (_$this.width() <= _$wrapper.width() || !settings.horizontal) {
+      if (_$this.width() <= _$wrapper.width() || !settings.horizontal.active) {
         _$horizontalBar.hide();
         _$horizontalRail.hide();
       } else {
@@ -116,16 +128,16 @@
     var _activateRail = function (e, orientation) {
       if (orientation === 'horizontal') {
         _$horizontalBar.height(settings.size + 3);
-        _$horizontalBar.css('bottom', settings.marginX + 2 + 'px');
+        _$horizontalBar.css('bottom', settings.horizontal.margin + 2 + 'px');
         _activate(_$horizontalRail, e, orientation + 'rail', function () {
-          _$horizontalBar.css('bottom', settings.marginX + 'px');
+          _$horizontalBar.css('bottom', settings.horizontal.margin + 'px');
           _$horizontalBar.height(settings.size);
         });
       } else {
         _$verticalBar.width(settings.size + 3);
-        _$verticalBar.css('right', settings.marginY + 2 + 'px');
+        _$verticalBar.css('right', settings.vertical.margin + 2 + 'px');
         _activate(_$verticalRail, e, orientation + 'rail', function () {
-          _$verticalBar.css('right', settings.marginY + 'px');
+          _$verticalBar.css('right', settings.vertical.margin + 'px');
           _$verticalBar.width(settings.size);
         });
       }
@@ -161,9 +173,21 @@
         _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
         if (_$horizontalBar.is(':visible')) {
           _$content.scrollLeft(scrollLeft);
+          if (typeof settings.horizontal.trigger.callback === 'function'){
+            var maxScroll = _$content[0].scrollWidth - _$wrapper.width();
+            if (maxScroll - scrollLeft <= settings.horizontal.trigger.offset){
+              settings.horizontal.trigger.callback();
+            }
+          }
         }
         if (_$verticalBar.is(':visible')) {
           _$content.scrollTop(scrollTop);
+          if (typeof settings.vertical.trigger.callback === 'function'){
+            var maxScroll = _$content[0].scrollHeight - _$wrapper.height();
+            if (maxScroll - scrollTop <= settings.vertical.trigger.offset){
+              settings.vertical.trigger.callback();
+            }
+          }
         }
       }
     };
@@ -239,7 +263,7 @@
       _$verticalRail.width(settings.size + 7);
       _$verticalRail.css('background-color', settings.railColor);
       _$verticalRail.css('top', '0');
-      _$verticalRail.css('right', settings.marginY + 'px');
+      _$verticalRail.css('right', settings.vertical.margin + 'px');
       _$verticalRail.css('bottom', '0');
 
       _$verticalBar = $('<div class="scroll2-bar" style="position: absolute; z-index: 999;"/>');
@@ -247,13 +271,13 @@
       _$verticalBar.css('border-radius', settings.size + 'px');
       _$verticalBar.css('background-color', settings.barColor);
       _$verticalBar.css('top', '0');
-      _$verticalBar.css('right', settings.marginY + 'px');
+      _$verticalBar.css('right', settings.vertical.margin + 'px');
 
       _$horizontalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
       _$horizontalRail.height(settings.size + 7);
       _$horizontalRail.css('background-color', settings.railColor);
       _$horizontalRail.css('left', '0');
-      _$horizontalRail.css('bottom', settings.marginX + 'px');
+      _$horizontalRail.css('bottom', settings.horizontal.margin + 'px');
       _$horizontalRail.css('right', '0');
 
       _$horizontalBar = $('<div class="scroll2-bar" style="position: absolute; z-index: 999;"/>');
@@ -261,7 +285,7 @@
       _$horizontalBar.css('border-radius', settings.size + 'px');
       _$horizontalBar.css('background-color', settings.barColor);
       _$horizontalBar.css('left', '0');
-      _$horizontalBar.css('bottom', settings.marginX + 'px');
+      _$horizontalBar.css('bottom', settings.horizontal.margin + 'px');
 
       $(document).bind('mouseup', _deactivateDrag);
       if (settings.appendTo) {
