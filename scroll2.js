@@ -32,16 +32,20 @@
       },
       appendTo: undefined,
       vertical: {
-        active:true,
+        active: true,
         margin: 2,
+        top: 0,
+        bottom: 0,
         trigger: {
           callback: undefined,
           offset: 0
         }
       },
       horizontal: {
-        active:true,
-        margin:2,
+        active: true,
+        margin: 2,
+        left: 0,
+        right: 0,
         trigger: {
           callback: undefined,
           offset: 0
@@ -73,8 +77,8 @@
       _$horizontalBar.width(Math.floor(100 * widthRatio) + '%');
 
       window.setTimeout(function () { //Safari will report the interim size until the css animation finishes.
-        _$verticalBar.height(_$verticalBar.height());
-        _$horizontalBar.width(_$horizontalBar.width());
+        _$verticalBar.height(_$verticalBar.height() || settings.size * 2);
+        _$horizontalBar.width(_$horizontalBar.width() || settings.size * 2);
       }, 200);
 
       if (_$this.height() <= _$wrapper.height() || !settings.vertical.active) {
@@ -173,18 +177,18 @@
         _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
         if (_$horizontalBar.is(':visible')) {
           _$content.scrollLeft(scrollLeft);
-          if (typeof settings.horizontal.trigger.callback === 'function'){
+          if (typeof settings.horizontal.trigger.callback === 'function') {
             var maxScroll = _$content[0].scrollWidth - _$wrapper.width();
-            if (maxScroll - scrollLeft <= settings.horizontal.trigger.offset){
+            if (maxScroll - scrollLeft <= settings.horizontal.trigger.offset) {
               settings.horizontal.trigger.callback();
             }
           }
         }
         if (_$verticalBar.is(':visible')) {
           _$content.scrollTop(scrollTop);
-          if (typeof settings.vertical.trigger.callback === 'function'){
+          if (typeof settings.vertical.trigger.callback === 'function') {
             var maxScroll = _$content[0].scrollHeight - _$wrapper.height();
-            if (maxScroll - scrollTop <= settings.vertical.trigger.offset){
+            if (maxScroll - scrollTop <= settings.vertical.trigger.offset) {
               settings.vertical.trigger.callback();
             }
           }
@@ -265,6 +269,8 @@
       _$verticalRail.css('top', '0');
       _$verticalRail.css('right', settings.vertical.margin + 'px');
       _$verticalRail.css('bottom', '0');
+      _$verticalRail.css('margin-top', settings.vertical.top + 'px');
+      _$verticalRail.css('margin-bottom', settings.vertical.bottom + 'px');
 
       _$verticalBar = $('<div class="scroll2-bar" style="position: absolute; z-index: 999;"/>');
       _$verticalBar.width(settings.size);
@@ -272,6 +278,8 @@
       _$verticalBar.css('background-color', settings.barColor);
       _$verticalBar.css('top', '0');
       _$verticalBar.css('right', settings.vertical.margin + 'px');
+      _$verticalBar.css('margin-top', settings.vertical.top + 'px');
+      _$verticalBar.css('margin-bottom', settings.vertical.bottom + 'px');
 
       _$horizontalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
       _$horizontalRail.height(settings.size + 7);
@@ -279,6 +287,8 @@
       _$horizontalRail.css('left', '0');
       _$horizontalRail.css('bottom', settings.horizontal.margin + 'px');
       _$horizontalRail.css('right', '0');
+      _$horizontalRail.css('margin-left', settings.horizontal.left + 'px');
+      _$horizontalRail.css('margin-right', settings.horizontal.right + 'px');
 
       _$horizontalBar = $('<div class="scroll2-bar" style="position: absolute; z-index: 999;"/>');
       _$horizontalBar.height(settings.size);
@@ -286,6 +296,8 @@
       _$horizontalBar.css('background-color', settings.barColor);
       _$horizontalBar.css('left', '0');
       _$horizontalBar.css('bottom', settings.horizontal.margin + 'px');
+      _$horizontalBar.css('margin-left', settings.horizontal.left + 'px');
+      _$horizontalBar.css('margin-right', settings.horizontal.right + 'px');
 
       $(document).bind('mouseup', _deactivateDrag);
       if (settings.appendTo) {
