@@ -20,6 +20,7 @@
     var pageX = {};
     var pageY = {};
     var _isDragging = {};
+    var _observer;
 
     var settings = $.extend(true, {
       size: 7,
@@ -99,7 +100,11 @@
     };
 
     var _destroy = function () {
-      _$this.unbind('DOMSubtreeModified', _throttledUpdate);
+      if (window.MutationObserver) {
+        _observer.disconnect();
+      } else {
+        _$this.unbind('DOMSubtreeModified', _throttledUpdate);
+      }
       $(window).unbind('resize', _throttledUpdate);
       $(document).unbind('mouseup', _deactivateDrag);
       if (settings.appendTo) {
@@ -361,7 +366,17 @@
         _$wrapper.append(_$horizontalBar);
       }
 
-      _$this.bind('DOMSubtreeModified', _throttledUpdate);
+      if (window.MutationObserver) {
+        _observer = new MutationObserver(_throttledUpdate);
+        _observer.observe(_$content[0], {
+          subtree: true,
+          attributes: true,
+          childList: true,
+          characterData: true
+        });
+      } else {
+        _$this.bind('DOMSubtreeModified', _throttledUpdate);
+      }
       $(window).bind('resize', _throttledUpdate);
       _update();
     };
