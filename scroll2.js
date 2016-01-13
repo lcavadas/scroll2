@@ -66,9 +66,13 @@
     var _update = function () {
       if (typeof settings.container.width === 'function') {
         _$wrapper.width(settings.container.width());
+      } else if (settings.container.width) {
+        _$wrapper.width(settings.container.width);
       }
       if (typeof settings.container.height === 'function') {
         _$wrapper.height(settings.container.height());
+      } else if (settings.container.height) {
+        _$wrapper.height(settings.container.height);
       }
 
       var heightRatio = _$wrapper.height() / _$this.height();
@@ -177,7 +181,6 @@
       }
 
       if (_$content.scrollTop() !== scrollTop || _$content.scrollLeft() !== scrollLeft) {
-        e.preventDefault();
         _$verticalBar.css('top', (_$wrapper.height() * scrollTop / _$this.height()) + 'px');
         _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
         if (_$horizontalBar.is(':visible')) {
@@ -198,6 +201,7 @@
             }
           }
         }
+        e.stopPropagation();
       }
     };
 
