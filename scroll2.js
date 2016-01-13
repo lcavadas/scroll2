@@ -272,8 +272,9 @@
         _activateBar(e);
         if(e.type!=='mousemove'){
           _scroll(e);
+        } else {
+          e.stopPropagation();
         }
-        e.stopPropagation();
       });
 
       _$verticalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
