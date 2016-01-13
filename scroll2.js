@@ -154,7 +154,6 @@
           _$verticalBar.width(settings.size);
         });
       }
-
     };
 
     var _activateBar = function (e) {
@@ -269,8 +268,13 @@
       _$parent = _$this.parent();
       _$wrapper = $('<div class="scroll2"/>');
       _$content = $('<div class="scroll2-content"/>');
-      _$wrapper.bind('mousewheel touchmove wheel mousemove', _activateBar);
-      _$wrapper.bind('mousewheel touchmove wheel', _scroll);
+      _$wrapper.bind('mousewheel touchmove wheel mousemove', function (e) {
+        _activateBar(e);
+        if(e.type!=='mousemove'){
+          _scroll(e);
+        }
+        e.stopPropagation();
+      });
 
       _$verticalRail = $('<div class="scroll2-rail" style="position: absolute; z-index: 998"/>');
       _$verticalRail.width(settings.size + 7);
