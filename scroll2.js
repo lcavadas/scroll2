@@ -14,13 +14,20 @@
     var _$verticalBar;
     var _$horizontalRail;
     var _$horizontalBar;
-    var scrollLeft = 0;
-    var scrollTop = 0;
     var _lastActive = {};
     var pageX = {};
     var pageY = {};
     var _isDragging = {};
     var _observer;
+
+    var _scrollLeft = 0;
+    var _scrollTop = 0;
+    var _maxYScroll;
+    var _maxXScroll;
+    var _scrollXTarget;
+    var _scrollXRate;
+    var _scrollYTarget;
+    var _scrollYRate;
 
     var settings = $.extend(true, {
       size: 7,
@@ -167,55 +174,57 @@
     };
 
     var _applyScroll = function (e) {
-      if (scrollTop < 0) {
-        scrollTop = 0;
-      } else if (scrollTop > _$this.height() - _$wrapper.height()) {
-        scrollTop = _$this.height() - _$wrapper.height();
+      if (_scrollTop < 0) {
+        _scrollTop = 0;
+      } else if (_scrollTop > _maxYScroll) {
+        _scrollTop = _maxYScroll;
+      } else {
+        //e.preventDefault();
       }
 
-      if (scrollLeft < 0) {
-        scrollLeft = 0;
-      } else if (scrollLeft > _$this.width() - _$wrapper.width()) {
-        scrollLeft = _$this.width() - _$wrapper.width();
+      if (_scrollLeft < 0) {
+        _scrollLeft = 0;
+      } else if (_scrollLeft > _maxXScroll) {
+        _scrollLeft = _maxXScroll;
+      } else {
+        //e.preventDefault();
       }
 
-      if (_$content.scrollTop() !== scrollTop || _$content.scrollLeft() !== scrollLeft) {
-        _$verticalBar.css('top', (_$wrapper.height() * scrollTop / _$this.height()) + 'px');
-        _$horizontalBar.css('left', (_$wrapper.width() * scrollLeft / _$this.width()) + 'px');
+      if (_$content.scrollTop() !== _scrollTop || _$content.scrollLeft() !== _scrollLeft) {
+        _$verticalBar.css('top', (_$wrapper.height() * _scrollTop / _$this.height()) + 'px');
+        _$horizontalBar.css('left', (_$wrapper.width() * _scrollLeft / _$this.width()) + 'px');
         if (_$horizontalBar.is(':visible')) {
-          _$content.scrollLeft(scrollLeft);
+          _$content.scrollLeft(_scrollLeft);
           if (typeof settings.horizontal.trigger.callback === 'function') {
-            var maxScroll = _$content[0].scrollWidth - _$wrapper.width();
-            if (maxScroll - scrollLeft <= settings.horizontal.trigger.offset) {
+            if (_maxXScroll - _scrollLeft <= settings.horizontal.trigger.offset) {
               settings.horizontal.trigger.callback();
             }
           }
         }
         if (_$verticalBar.is(':visible')) {
-          _$content.scrollTop(scrollTop);
+          _$content.scrollTop(_scrollTop);
           if (typeof settings.vertical.trigger.callback === 'function') {
-            var maxScroll = _$content[0].scrollHeight - _$wrapper.height();
-            if (maxScroll - scrollTop <= settings.vertical.trigger.offset) {
+            if (_maxYScroll - _scrollTop <= settings.vertical.trigger.offset) {
               settings.vertical.trigger.callback();
             }
           }
         }
-        e.stopPropagation();
+        e.preventDefault();
       }
     };
 
     var _scroll = function (e) {
       if (e.type === 'touchmove') {
         if (pageX.touch && pageY.touch) {
-          scrollLeft -= e.originalEvent.touches[0].pageX - pageX.touch;
-          scrollTop -= e.originalEvent.touches[0].pageY - pageY.touch;
+          _scrollLeft -= e.originalEvent.touches[0].pageX - pageX.touch;
+          _scrollTop -= e.originalEvent.touches[0].pageY - pageY.touch;
         }
         pageX.touch = e.originalEvent.touches[0].pageX;
         pageY.touch = e.originalEvent.touches[0].pageY;
       } else {
         //IE will generate events were the deltas are undefined instead of 0
-        scrollLeft += e.originalEvent.deltaX || 0;
-        scrollTop += e.originalEvent.deltaY || 0;
+        _scrollLeft += e.originalEvent.deltaX || 0;
+        _scrollTop += e.originalEvent.deltaY || 0;
       }
       _applyScroll(e);
     };
@@ -233,15 +242,15 @@
     var _railClick = function (e, orientation) {
       if (orientation === 'horizontal') {
         if ((e.pageX - _$horizontalBar.offset().left) > 0) {
-          scrollLeft += _$wrapper.width();
+          _scrollLeft += _$wrapper.width();
         } else {
-          scrollLeft -= _$wrapper.width();
+          _scrollLeft -= _$wrapper.width();
         }
       } else {
         if ((e.pageY - _$verticalBar.offset().top) > 0) {
-          scrollTop += _$wrapper.height();
+          _scrollTop += _$wrapper.height();
         } else {
-          scrollTop -= _$wrapper.height();
+          _scrollTop -= _$wrapper.height();
         }
       }
       _applyScroll(e);
@@ -249,9 +258,9 @@
 
     var _barDrag = function (e) {
       if (_isDragging.vertical && pageY.drag) {
-        scrollTop += (_$this.height() * (e.pageY - pageY.drag)) / _$wrapper.height();
+        _scrollTop += (_$this.height() * (e.pageY - pageY.drag)) / _$wrapper.height();
       } else if (_isDragging.horizontal && pageX.drag) {
-        scrollLeft += (_$this.width() * (e.pageX - pageX.drag)) / _$wrapper.width();
+        _scrollLeft += (_$this.width() * (e.pageX - pageX.drag)) / _$wrapper.width();
       }
 
       if (_isDragging.vertical || _isDragging.horizontal) {
@@ -264,13 +273,70 @@
       }
     };
 
+    var _animateScroll = function () {
+      var validY, validX;
+
+      if (_scrollYRate > 0) {
+        validY = _scrollTop + _scrollYRate < _scrollYTarget;
+      } else {
+        validY = _scrollTop + _scrollYRate > _scrollYTarget;
+      }
+      if (_scrollXRate > 0) {
+        validX = _scrollLeft + _scrollXRate < _scrollXTarget;
+      } else {
+        validX = _scrollLeft + _scrollXRate > _scrollXTarget;
+      }
+
+      if (validY) {
+        _scrollTop += _scrollYRate;
+      } else {
+        _scrollTop = _scrollYTarget;
+      }
+
+      if (validX) {
+        _scrollLeft += _scrollXRate;
+      } else {
+        _scrollLeft = _scrollXTarget;
+      }
+
+      var scrolled = false;
+      if (validX || validY) {
+        _applyScroll({
+          preventDefault: function () {
+            scrolled = true;
+          }
+        });
+        if (scrolled) {
+          window.setTimeout(function () {
+            _animateScroll();
+          }, 5);
+        }
+      }
+    };
+
+    var _scrollTo = function (selector, duration) {
+      var $el = $(selector);
+      var rate = 5 / (duration || 600);
+
+      _scrollYRate = rate * $el.position().top;
+      _scrollXRate = rate * $el.position().left;
+      _scrollYTarget = $el.position().top + _scrollTop;
+      _scrollXTarget = $el.position().left + _scrollLeft;
+
+      if (_scrollYRate !== 0 || _scrollXRate !== 0) {
+        window.setTimeout(function () {
+          _animateScroll();
+        }, 5);
+      }
+    };
+
     var _init = function () {
       _$parent = _$this.parent();
       _$wrapper = $('<div class="scroll2"/>');
       _$content = $('<div class="scroll2-content"/>');
       _$wrapper.bind('mousewheel touchmove wheel mousemove', function (e) {
         _activateBar(e);
-        if(e.type!=='mousemove'){
+        if (e.type !== 'mousemove') {
           _scroll(e);
         } else {
           e.stopPropagation();
@@ -387,12 +453,16 @@
         _$this.bind('DOMSubtreeModified', _throttledUpdate);
       }
       $(window).bind('resize', _throttledUpdate);
+
+      _maxYScroll = _$content[0].scrollHeight - _$wrapper.height();
+      _maxXScroll = _$content[0].scrollWidth - _$wrapper.width();
       _update();
     };
     _init();
 
     return $.extend(this, {
       update: _update,
+      scrollTo: _scrollTo,
       destroy: _destroy
     });
   };
