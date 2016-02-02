@@ -20,6 +20,7 @@ body.scroll2-noselect{
     right: 0;
     bottom: 0;
     overflow: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .scroll2 .scroll2-rail {
