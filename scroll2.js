@@ -214,7 +214,11 @@
     };
 
     var _scroll = function (e) {
-      if (e.type === 'touchmove') {
+      if (e.type === 'touchstart') {
+        pageX.touch = e.originalEvent.touches[0].pageX;
+        pageY.touch = e.originalEvent.touches[0].pageY;
+        return;
+      } else if (e.type === 'touchmove') {
         if (pageX.touch && pageY.touch) {
           _scrollLeft -= e.originalEvent.touches[0].pageX - pageX.touch;
           _scrollTop -= e.originalEvent.touches[0].pageY - pageY.touch;
@@ -334,7 +338,7 @@
       _$parent = _$this.parent();
       _$wrapper = $('<div class="scroll2"/>');
       _$content = $('<div class="scroll2-content"/>');
-      _$wrapper.bind('mousewheel touchmove wheel mousemove', function (e) {
+      _$wrapper.bind('mousewheel touchmove touchstart wheel mousemove', function (e) {
         _activateBar(e);
         if (e.type !== 'mousemove') {
           _scroll(e);
