@@ -190,7 +190,7 @@
         //e.preventDefault();
       }
 
-      if (_$content.scrollTop() !== _scrollTop || _$content.scrollLeft() !== _scrollLeft) {
+      if (_$content.scrollTop() !== Math.floor(_scrollTop) || _$content.scrollLeft() !== Math.floor(_scrollLeft)) {
         _$verticalBar.css('top', (_$wrapper.height() * _scrollTop / _$this.height()) + 'px');
         _$horizontalBar.css('left', (_$wrapper.width() * _scrollLeft / _$this.width()) + 'px');
         if (_$horizontalBar.is(':visible')) {
