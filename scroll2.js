@@ -1,6 +1,7 @@
 /* globals jQuery:true */
 /*!
  * jQuery Plugin for scrollbars
+ * usage of the scrollTo function requires easing - https://github.com/lcavadas/easing
  *
  * @author Luis Serralheiro (https://github.com/lcavadas/scroll2)
  */
@@ -277,60 +278,32 @@
       }
     };
 
-    var _animateScroll = function () {
-      var validY, validX;
+    var _animateScroll = function (time, delay, startTop, startLeft, targetTop, targetLeft, duration, ease) {
+      time += delay;
+      _scrollTop = Math.Easing[ease](time, startTop, targetTop, duration);
+      _scrollLeft = Math.Easing[ease](time, startLeft, targetLeft, duration);
 
-      if (_scrollYRate > 0) {
-        validY = _scrollTop + _scrollYRate < _scrollYTarget;
+      if (time < duration) {
+        window.setTimeout(function () {
+          _animateScroll(time, delay, startTop, startLeft, targetTop, targetLeft, duration, ease);
+        }, delay);
       } else {
-        validY = _scrollTop + _scrollYRate > _scrollYTarget;
-      }
-      if (_scrollXRate > 0) {
-        validX = _scrollLeft + _scrollXRate < _scrollXTarget;
-      } else {
-        validX = _scrollLeft + _scrollXRate > _scrollXTarget;
-      }
-
-      if (validY) {
-        _scrollTop += _scrollYRate;
-      } else {
-        _scrollTop = _scrollYTarget;
+        _scrollTop = targetTop;
+        _scrollLeft = targetLeft;
       }
 
-      if (validX) {
-        _scrollLeft += _scrollXRate;
-      } else {
-        _scrollLeft = _scrollXTarget;
-      }
-
-      var scrolled = false;
-      if (validX || validY) {
-        _applyScroll({
-          preventDefault: function () {
-            scrolled = true;
-          }
-        });
-        if (scrolled) {
-          window.setTimeout(function () {
-            _animateScroll();
-          }, 5);
+      _applyScroll({
+        preventDefault: function () {
         }
-      }
+      });
     };
 
-    var _scrollTo = function (selector, duration) {
+    var _scrollTo = function (selector, duration, easeType) {
       var $el = $(selector);
-      var rate = 5 / (duration || 600);
-
-      _scrollYRate = rate * $el.position().top;
-      _scrollXRate = rate * $el.position().left;
-      _scrollYTarget = $el.position().top + _scrollTop;
-      _scrollXTarget = $el.position().left + _scrollLeft;
-
       if (_scrollYRate !== 0 || _scrollXRate !== 0) {
-        window.setTimeout(function () {
-          _animateScroll();
-        }, 5);
+        var originTop = _scrollTop;
+        var originLeft = _scrollLeft;
+        _animateScroll(0, 5, originTop, originLeft, $el.position().top, $el.position().left, duration || 600, easeType || 'easeInOutCirc');
       }
     };
 
