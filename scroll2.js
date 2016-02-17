@@ -293,6 +293,9 @@
 
       _applyScroll({
         preventDefault: function () {
+        },
+        stopPropagation: function () {
+
         }
       });
     };
