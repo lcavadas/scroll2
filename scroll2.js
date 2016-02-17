@@ -25,9 +25,7 @@
     var _scrollTop = 0;
     var _maxYScroll;
     var _maxXScroll;
-    var _scrollXTarget;
     var _scrollXRate;
-    var _scrollYTarget;
     var _scrollYRate;
 
     var settings = $.extend(true, {
@@ -83,6 +81,8 @@
         _$wrapper.height(settings.container.height);
       }
 
+      _maxYScroll = _$content[0].scrollHeight - _$wrapper.height();
+      _maxXScroll = _$content[0].scrollWidth - _$wrapper.width();
       var heightRatio = _$wrapper.height() / _$this.height();
       var widthRatio = _$wrapper.width() / _$this.width();
 
@@ -90,8 +90,8 @@
       _$horizontalBar.width(Math.floor(100 * widthRatio) + '%');
 
       window.setTimeout(function () { //Safari will report the interim size until the css animation finishes.
-        _$verticalBar.height(_$verticalBar.height() || settings.size * 2);
-        _$horizontalBar.width(_$horizontalBar.width() || settings.size * 2);
+        _$verticalBar.height(Math.max(_$verticalBar.height() - settings.vertical.top - settings.vertical.bottom, settings.size * 2));
+        _$horizontalBar.width(Math.max(_$horizontalBar.width() - settings.horizontal.left - settings.horizontal.right, settings.size * 2));
       }, 200);
 
       if (_$this.height() <= _$wrapper.height() || !settings.vertical.active) {
@@ -431,8 +431,6 @@
       }
       $(window).bind('resize', _throttledUpdate);
 
-      _maxYScroll = _$content[0].scrollHeight - _$wrapper.height();
-      _maxXScroll = _$content[0].scrollWidth - _$wrapper.width();
       _update();
     };
     _init();
