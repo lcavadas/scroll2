@@ -277,25 +277,28 @@
       }
     };
 
-    var _animateScroll = function (time, delay, startTop, startLeft, targetTop, targetLeft, duration, ease) {
+    var _animateScroll = function (time, delay, startTop, startLeft, offsetTop, offsetLeft, duration, ease) {
       time += delay;
-      _scrollTop = Math.Easing[ease](time, startTop, targetTop, duration);
-      _scrollLeft = Math.Easing[ease](time, startLeft, targetLeft, duration);
+      if (settings.vertical.active && offsetTop) {
+        _scrollTop = Math.Easing[ease](time, startTop, offsetTop, duration);
+      }
+      if (settings.horizontal.active && offsetLeft) {
+        _scrollLeft = Math.Easing[ease](time, startLeft, offsetLeft, duration);
+      }
 
       if (time < duration) {
         window.setTimeout(function () {
-          _animateScroll(time, delay, startTop, startLeft, targetTop, targetLeft, duration, ease);
+          _animateScroll(time, delay, startTop, startLeft, offsetTop, offsetLeft, duration, ease);
         }, delay);
       } else {
-        _scrollTop = targetTop;
-        _scrollLeft = targetLeft;
+        _scrollTop = startTop + offsetTop;
+        _scrollLeft = startLeft + offsetLeft;
       }
 
       _applyScroll({
         preventDefault: function () {
         },
         stopPropagation: function () {
-
         }
       });
     };
