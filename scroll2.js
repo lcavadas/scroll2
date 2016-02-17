@@ -179,8 +179,6 @@
         _scrollTop = 0;
       } else if (_scrollTop > _maxYScroll) {
         _scrollTop = _maxYScroll;
-      } else {
-        //e.preventDefault();
       }
 
       if (_scrollLeft < 0) {
@@ -211,6 +209,7 @@
           }
         }
         e.preventDefault();
+        e.stopPropagation();
       }
     };
 
