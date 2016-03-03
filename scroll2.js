@@ -27,6 +27,8 @@
     var _maxXScroll;
     var _scrollXRate;
     var _scrollYRate;
+    
+    var _deltaModeRate = {};
 
     var settings = $.extend(true, {
       size: 7,
@@ -227,8 +229,8 @@
         pageY.touch = e.originalEvent.touches[0].pageY;
       } else {
         //IE will generate events were the deltas are undefined instead of 0
-        _scrollLeft += e.originalEvent.deltaX || 0;
-        _scrollTop += e.originalEvent.deltaY || 0;
+        _scrollLeft += (e.originalEvent.deltaX || 0) * _modeMultiplier[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
+        _scrollTop += (e.originalEvent.deltaY || 0) * _modeMultiplier[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
       }
       _applyScroll(e);
     };
@@ -354,6 +356,10 @@
       _$horizontalBar.css('bottom', settings.horizontal.margin + 'px');
       _$horizontalBar.css('margin-left', settings.horizontal.left + 'px');
       _$horizontalBar.css('margin-right', settings.horizontal.right + 'px');
+
+      _deltaModeRate[WheelEvent.DOM_DELTA_PIXEL] = 1;
+      _deltaModeRate[WheelEvent.DOM_DELTA_LINE] = +_$this.css('font-size').substring(0, _$this.css('font-size').length - 2);
+      _deltaModeRate[WheelEvent.DOM_DELTA_PAGE] = _$wrapper.height();
 
       $(document).bind('mouseup', _deactivateDrag);
       if (settings.appendTo) {
