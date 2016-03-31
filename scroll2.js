@@ -316,8 +316,6 @@
         _activateBar(e);
         if (e.type !== 'mousemove') {
           _scroll(e);
-        } else {
-          e.stopPropagation();
         }
       });
 
