@@ -229,8 +229,8 @@
         pageY.touch = e.originalEvent.touches[0].pageY;
       } else {
         //IE will generate events were the deltas are undefined instead of 0
-        _scrollLeft += (e.originalEvent.deltaX || 0) * _modeMultiplier[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
-        _scrollTop += (e.originalEvent.deltaY || 0) * _modeMultiplier[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
+        _scrollLeft += (e.originalEvent.deltaX || 0) * _deltaModeRate[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
+        _scrollTop += (e.originalEvent.deltaY || 0) * _deltaModeRate[e.originalEvent.deltaMode || WheelEvent.DOM_DELTA_PIXEL];
       }
       _applyScroll(e);
     };
