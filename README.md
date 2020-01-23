@@ -2,7 +2,7 @@
 
 Jquery plugin to make scrolls behave and look like the OSX scrolls.
 
-See it in action [here](https://rawgit.com/lcavadas/scroll2/master/scroll2.html)
+See it in action [here](http://lcavadas.github.io/scroll2/scroll2.html)
 
 # Options
 
